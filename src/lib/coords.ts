@@ -17,6 +17,7 @@ import {
   MAX_SCALE,
   MIN_SCALE,
   WHEEL_LINE_HEIGHT,
+  WHEEL_MAX_STEP,
   WHEEL_ZOOM_SPEED,
 } from "./constants";
 
@@ -100,7 +101,11 @@ export function wheelZoomFactor(
         ? pageHeight
         : 1;
   const pixels = deltaY * unit;
-  return Math.exp(-pixels * WHEEL_ZOOM_SPEED);
+  return clamp(
+    Math.exp(-pixels * WHEEL_ZOOM_SPEED),
+    1 / WHEEL_MAX_STEP,
+    WHEEL_MAX_STEP
+  );
 }
 
 function clamp(value: number, min: number, max: number): number {
