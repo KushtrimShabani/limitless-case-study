@@ -13,6 +13,7 @@ import { useCallback, useRef, useState } from "react";
 import { PlaceThreadButton } from "./PlaceThreadButton";
 import { DraggableThread } from "./DraggableThread";
 import { NewThreadComposer } from "./NewThreadComposer";
+import { ImageCanvas } from "./canvas/ImageCanvas";
 import { useMaxZIndex } from "../hooks/useMaxZIndex";
 import {
   clampToImage,
@@ -106,31 +107,16 @@ export function CommentsCanvas() {
         position: "relative",
         width: "100vw",
         height: "100vh",
-        overflow: "hidden",
-        display: "flex",
-        alignItems: "center",
-        justifyContent: "center",
       }}
     >
-      {/* Image frame: pins are positioned in % of this box, which is exactly
-          the image's box. `isolation` keeps pin z-indexes inside it. */}
-      <div style={{ position: "relative", isolation: "isolate" }}>
-        {/* Plain <img>, not next/image: we need a direct ref for
-            getBoundingClientRect, and next/image skips optimizing SVGs anyway */}
-        <img
-          ref={imageRef}
-          src={IMAGE.src}
-          width={IMAGE.width}
-          height={IMAGE.height}
-          alt={IMAGE.alt}
-          draggable={false}
-          style={{
-            display: "block",
-            width: IMAGE_CSS_WIDTH,
-            height: "auto",
-            userSelect: "none",
-          }}
-        />
+      <ImageCanvas
+        imageRef={imageRef}
+        src={IMAGE.src}
+        width={IMAGE.width}
+        height={IMAGE.height}
+        alt={IMAGE.alt}
+        imageStyle={{ width: IMAGE_CSS_WIDTH, height: "auto" }}
+      >
         <DndContext onDragEnd={handleDragEnd} sensors={sensors}>
           {threads.map((thread) => (
             <DraggableThread key={thread.id} thread={thread} />
@@ -139,7 +125,7 @@ export function CommentsCanvas() {
         {mode.kind === "composing" ? (
           <NewThreadComposer point={mode.point} onClose={resetMode} />
         ) : null}
-      </div>
+      </ImageCanvas>
       <PlaceThreadButton
         isPlacing={mode.kind === "placing"}
         onStart={() => setMode({ kind: "placing" })}

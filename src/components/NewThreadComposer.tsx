@@ -33,6 +33,7 @@ export function NewThreadComposer({ point, onClose }: NewThreadComposerProps) {
       onComposerSubmit={onClose}
     >
       <CommentPin
+        data-canvas-pan-ignore
         userId={creatorId ?? undefined}
         corner="top-left"
         style={{

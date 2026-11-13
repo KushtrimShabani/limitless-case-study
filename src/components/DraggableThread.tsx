@@ -44,6 +44,7 @@ export function DraggableThread({ thread }: { thread: ThreadData }) {
     >
       <div
         ref={setNodeRef}
+        data-canvas-pan-ignore
         style={{
           position: "absolute",
           left,
