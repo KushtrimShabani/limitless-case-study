@@ -3,7 +3,7 @@ import { useEditThreadMetadata } from "@liveblocks/react/suspense";
 import { FloatingThread, CommentPin } from "@liveblocks/react-ui";
 import { ThreadData } from "@liveblocks/client";
 import { useDraggable } from "@dnd-kit/core";
-import { useMaxZIndex } from "../hooks";
+import { useMaxZIndex } from "../hooks/useMaxZIndex";
 
 // A draggable thread
 export function DraggableThread({ thread }: { thread: ThreadData }) {
@@ -20,9 +20,13 @@ export function DraggableThread({ thread }: { thread: ThreadData }) {
       data: { thread }, // Pass thread to DndContext drag end event
     });
 
-  // If currently dragging, add drag values to current metadata
-  const x = transform ? transform.x + thread.metadata.x : thread.metadata.x;
-  const y = transform ? transform.y + thread.metadata.y : thread.metadata.y;
+  // Anchor is normalized (0–1), so position it as a percentage of the image
+  // frame. While dragging, dnd-kit's pixel offset is layered on top; the new
+  // anchor is only computed and saved on drop (see CommentsCanvas).
+  const left = `${thread.metadata.x * 100}%`;
+  const top = `${thread.metadata.y * 100}%`;
+  const dragX = transform?.x ?? 0;
+  const dragY = transform?.y ?? 0;
 
   // Used to set z-index higher than other threads when open or dragging
   const maxZIndex = useMaxZIndex();
@@ -42,9 +46,9 @@ export function DraggableThread({ thread }: { thread: ThreadData }) {
         ref={setNodeRef}
         style={{
           position: "absolute",
-          top: 0,
-          left: 0,
-          transform: `translate3d(${x}px, ${y}px, 0)`,
+          left,
+          top,
+          transform: `translate3d(${dragX}px, ${dragY}px, 0)`,
           zIndex: currentZIndex,
         }}
       >

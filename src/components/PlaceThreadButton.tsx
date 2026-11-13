@@ -1,27 +1,29 @@
-import { useCallback, useEffect, useState } from "react";
-import { CommentPin, FloatingComposer } from "@liveblocks/react-ui";
-import { useSelf } from "@liveblocks/react";
-import { useMaxZIndex } from "../hooks";
+import { useEffect, useState } from "react";
+import { CommentPin } from "@liveblocks/react-ui";
 
-export function PlaceThreadButton() {
-  const [state, setState] = useState<"initial" | "placing" | "placed">(
-    "initial"
-  );
-  const [coords, setCoords] = useState({ x: 0, y: 0 });
+type PlaceThreadButtonProps = {
+  isPlacing: boolean;
+  onStart: () => void;
+  /** Raw click position in client coordinates; the parent converts it. */
+  onPlace: (clientX: number, clientY: number) => void;
+  onCancel: () => void;
+};
 
-  const reset = useCallback(() => {
-    setState("initial");
-    setCoords({ x: 0, y: 0 });
-  }, []);
-
+// "+" button that enters placing mode, plus the overlay that captures the
+// click where the new thread should go.
+export function PlaceThreadButton({
+  isPlacing,
+  onStart,
+  onPlace,
+  onCancel,
+}: PlaceThreadButtonProps) {
   return (
     <>
-      {/* Allows you to place floating composers */}
       <div style={{ position: "absolute", top: 12, right: 12 }}>
         <button
-          onClick={() => setState("placing")}
+          onClick={onStart}
           style={{
-            cursor: state === "placing" ? "none" : undefined,
+            cursor: isPlacing ? "none" : undefined,
             background: "#ffffff",
             border: "1px solid #00000030",
             borderRadius: 8,
@@ -34,91 +36,25 @@ export function PlaceThreadButton() {
         </button>
       </div>
 
-      {/* Overlay that lets you click and cancel placing */}
-      <div
-        style={{
-          position: "absolute",
-          top: 0,
-          left: 0,
-          bottom: 0,
-          right: 0,
-          background: "rgba(0, 0, 0, 0.2)",
-          pointerEvents: state === "initial" ? "none" : undefined,
-          opacity: state !== "initial" ? 1 : 0,
-        }}
-        onClick={reset}
-        onContextMenu={(e) => {
-          e.preventDefault();
-          reset();
-        }}
-      />
-
-      {/* The visible cursor when you're placing */}
-      {state === "placing" ? (
+      {/* Overlay that captures the placing click; right-click cancels */}
+      {isPlacing ? (
         <div
           style={{
             position: "absolute",
-            top: 0,
-            left: 0,
-            right: 0,
-            bottom: 0,
+            inset: 0,
+            background: "rgba(0, 0, 0, 0.2)",
             cursor: "none",
           }}
-          onClick={(e) => {
-            // On click, get coords and place down composer
-            setCoords({ x: e.clientX, y: e.clientY });
-            setState("placed");
-          }}
+          onClick={(e) => onPlace(e.clientX, e.clientY)}
           onContextMenu={(e) => {
             e.preventDefault();
-            reset();
+            onCancel();
           }}
         >
           <NewThreadCursor />
         </div>
       ) : null}
-
-      {/* When cursor placed, show a composer on the canvas */}
-      {state === "placed" ? (
-        <ThreadComposer coords={coords} onSubmit={() => setState("initial")} />
-      ) : null}
     </>
-  );
-}
-
-function ThreadComposer({
-  coords,
-  onSubmit,
-}: {
-  coords: { x: number; y: number };
-  onSubmit: () => void;
-}) {
-  // Get the current user
-  const creatorId = useSelf((me) => me.id);
-  // Create thread above other threads
-  const maxZIndex = useMaxZIndex();
-
-  return (
-    <FloatingComposer
-      defaultOpen={true}
-      metadata={{
-        x: coords.x,
-        y: coords.y,
-        zIndex: maxZIndex + 1,
-      }}
-      onComposerSubmit={onSubmit}
-    >
-      <CommentPin
-        userId={creatorId ?? undefined}
-        corner="top-left"
-        style={{
-          position: "absolute",
-          top: 0,
-          left: 0,
-          transform: `translate(${coords.x}px, ${coords.y}px)`,
-        }}
-      />
-    </FloatingComposer>
   );
 }
 

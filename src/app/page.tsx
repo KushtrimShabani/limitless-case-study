@@ -9,7 +9,10 @@ import { ErrorBoundary } from "react-error-boundary";
 import { CommentsCanvas } from "../components/CommentsCanvas";
 
 export default function Page() {
-  const roomId = useExampleRoomId("liveblocks:examples:nextjs-comments-canvas");
+  // New room: the starter's room holds threads with pixel coordinates, which
+  // would be misread as normalized (0–1) anchors. Must stay under
+  // "liveblocks:examples:*", the pattern the auth route allows.
+  const roomId = useExampleRoomId("liveblocks:examples:image-comments");
 
   return (
     <RoomProvider id={roomId}>

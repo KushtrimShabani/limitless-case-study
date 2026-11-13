@@ -1,0 +1,78 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1600" height="1000" viewBox="0 0 1600 1000" font-family="system-ui, -apple-system, 'Segoe UI', sans-serif">
+  <!-- Fictional landing-page mockup used as the sample image to comment on. -->
+  <rect width="1600" height="1000" fill="#f7f5f0"/>
+
+  <!-- Nav -->
+  <rect width="1600" height="88" fill="#ffffff"/>
+  <rect y="88" width="1600" height="1" fill="#e6e2d8"/>
+  <circle cx="92" cy="44" r="18" fill="#1f6f5c"/>
+  <text x="122" y="52" font-size="24" font-weight="700" fill="#1b1d1c">Acme Planner</text>
+  <text x="860" y="51" font-size="18" fill="#4a4f4c">Product</text>
+  <text x="960" y="51" font-size="18" fill="#4a4f4c">Pricing</text>
+  <text x="1056" y="51" font-size="18" fill="#4a4f4c">Customers</text>
+  <text x="1176" y="51" font-size="18" fill="#4a4f4c">Docs</text>
+  <rect x="1360" y="24" width="168" height="40" rx="20" fill="#1b1d1c"/>
+  <text x="1444" y="50" font-size="17" font-weight="600" fill="#ffffff" text-anchor="middle">Start free</text>
+
+  <!-- Hero copy -->
+  <rect x="96" y="168" width="196" height="32" rx="16" fill="#dcefe7"/>
+  <text x="194" y="190" font-size="15" font-weight="600" fill="#1f6f5c" text-anchor="middle">New: shared timelines</text>
+  <text x="96" y="282" font-size="64" font-weight="800" fill="#1b1d1c" letter-spacing="-1.5">Plan the week</text>
+  <text x="96" y="356" font-size="64" font-weight="800" fill="#1b1d1c" letter-spacing="-1.5">your team <tspan fill="#1f6f5c">actually</tspan></text>
+  <text x="96" y="430" font-size="64" font-weight="800" fill="#1b1d1c" letter-spacing="-1.5">wants to follow.</text>
+  <text x="96" y="492" font-size="22" fill="#5b615d">One board for tasks, owners and deadlines.</text>
+  <text x="96" y="526" font-size="22" fill="#5b615d">No status meetings required.</text>
+  <rect x="96" y="574" width="200" height="56" rx="28" fill="#1f6f5c"/>
+  <text x="196" y="609" font-size="19" font-weight="600" fill="#ffffff" text-anchor="middle">Try it free</text>
+  <rect x="316" y="574" width="184" height="56" rx="28" fill="none" stroke="#1b1d1c" stroke-width="2"/>
+  <text x="408" y="609" font-size="19" font-weight="600" fill="#1b1d1c" text-anchor="middle">Watch demo</text>
+
+  <!-- Hero product card -->
+  <rect x="852" y="148" width="652" height="500" rx="20" fill="#ffffff" stroke="#e6e2d8"/>
+  <circle cx="888" cy="182" r="7" fill="#e8695b"/>
+  <circle cx="912" cy="182" r="7" fill="#f2bf4b"/>
+  <circle cx="936" cy="182" r="7" fill="#5cb87a"/>
+  <text x="884" y="240" font-size="20" font-weight="700" fill="#1b1d1c">This week</text>
+  <text x="1470" y="240" font-size="15" fill="#8a908c" text-anchor="end">Mon 12 – Fri 16</text>
+  <g font-size="15" fill="#5b615d">
+    <text x="884" y="292">Design review</text>
+    <text x="884" y="348">API migration</text>
+    <text x="884" y="404">Launch copy</text>
+    <text x="884" y="460">QA pass</text>
+    <text x="884" y="516">Release</text>
+  </g>
+  <rect x="1040" y="274" width="250" height="26" rx="13" fill="#1f6f5c"/>
+  <rect x="1110" y="330" width="330" height="26" rx="13" fill="#7fb8a6"/>
+  <rect x="1060" y="386" width="170" height="26" rx="13" fill="#f2bf4b"/>
+  <rect x="1250" y="442" width="190" height="26" rx="13" fill="#e8695b"/>
+  <rect x="1380" y="498" width="80" height="26" rx="13" fill="#1b1d1c"/>
+  <rect x="884" y="564" width="588" height="1" fill="#eeeae1"/>
+  <circle cx="900" cy="604" r="16" fill="#f2bf4b"/>
+  <circle cx="926" cy="604" r="16" fill="#7fb8a6" stroke="#ffffff" stroke-width="3"/>
+  <circle cx="952" cy="604" r="16" fill="#e8695b" stroke="#ffffff" stroke-width="3"/>
+  <text x="982" y="609" font-size="15" fill="#5b615d">3 people editing</text>
+
+  <!-- Feature cards -->
+  <g>
+    <rect x="96" y="712" width="440" height="200" rx="18" fill="#ffffff" stroke="#e6e2d8"/>
+    <rect x="128" y="744" width="48" height="48" rx="12" fill="#dcefe7"/>
+    <path d="M142 768l8 8 14-16" fill="none" stroke="#1f6f5c" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
+    <text x="128" y="836" font-size="22" font-weight="700" fill="#1b1d1c">Clear owners</text>
+    <text x="128" y="870" font-size="17" fill="#5b615d">Every task has exactly one person on it.</text>
+  </g>
+  <g>
+    <rect x="580" y="712" width="440" height="200" rx="18" fill="#ffffff" stroke="#e6e2d8"/>
+    <rect x="612" y="744" width="48" height="48" rx="12" fill="#fdf0d2"/>
+    <circle cx="636" cy="768" r="12" fill="none" stroke="#b8860b" stroke-width="4"/>
+    <path d="M636 761v8l5 4" fill="none" stroke="#b8860b" stroke-width="3" stroke-linecap="round"/>
+    <text x="612" y="836" font-size="22" font-weight="700" fill="#1b1d1c">Honest deadlines</text>
+    <text x="612" y="870" font-size="17" fill="#5b615d">Slips show up the moment they happen.</text>
+  </g>
+  <g>
+    <rect x="1064" y="712" width="440" height="200" rx="18" fill="#ffffff" stroke="#e6e2d8"/>
+    <rect x="1096" y="744" width="48" height="48" rx="12" fill="#fbe1dd"/>
+    <path d="M1108 778h24M1108 768h24M1108 758h14" fill="none" stroke="#c4473a" stroke-width="4" stroke-linecap="round"/>
+    <text x="1096" y="836" font-size="22" font-weight="700" fill="#1b1d1c">Weekly digest</text>
+    <text x="1096" y="870" font-size="17" fill="#5b615d">One email on Friday. That is the whole update.</text>
+  </g>
+</svg>
