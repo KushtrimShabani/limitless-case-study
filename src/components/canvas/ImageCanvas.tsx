@@ -5,10 +5,15 @@ import {
   type ReactNode,
   type RefObject,
   useCallback,
+  useEffect,
   useRef,
   useState,
 } from "react";
 import { useCanvasTransform } from "../../hooks/useCanvasTransform";
+import { ZOOM_STEP } from "../../lib/constants";
+import { wheelZoomFactor } from "../../lib/coords";
+import { CanvasControls } from "./CanvasControls";
+import { CanvasScaleProvider } from "./CanvasScaleContext";
 
 const DRAG_THRESHOLD = 5;
 
@@ -39,10 +44,52 @@ export function ImageCanvas({
   imageStyle,
   children,
 }: ImageCanvasProps) {
-  const { x, y, scale, panBy } = useCanvasTransform();
+  const { x, y, scale, panBy, zoomAt, reset } = useCanvasTransform();
+  const viewportRef = useRef<HTMLDivElement>(null);
+  const worldRef = useRef<HTMLDivElement>(null);
   const panPointer = useRef<PanPointer | null>(null);
   const didDrag = useRef(false);
   const [isPanning, setIsPanning] = useState(false);
+
+  // The world is flex-centered, so zoom points are measured from its layout
+  // position (offsetLeft/Top ignore transforms), not from the viewport corner.
+  useEffect(() => {
+    const viewport = viewportRef.current;
+    if (!viewport) {
+      return;
+    }
+    const handleWheel = (event: WheelEvent) => {
+      const world = worldRef.current;
+      if (!world) {
+        return;
+      }
+      event.preventDefault();
+      const rect = viewport.getBoundingClientRect();
+      zoomAt(
+        event.clientX - rect.left - world.offsetLeft,
+        event.clientY - rect.top - world.offsetTop,
+        wheelZoomFactor(event.deltaY, event.deltaMode, viewport.clientHeight)
+      );
+    };
+    viewport.addEventListener("wheel", handleWheel, { passive: false });
+    return () => viewport.removeEventListener("wheel", handleWheel);
+  }, [zoomAt]);
+
+  const zoomAtCenter = useCallback(
+    (factor: number) => {
+      const viewport = viewportRef.current;
+      const world = worldRef.current;
+      if (!viewport || !world) {
+        return;
+      }
+      zoomAt(
+        viewport.clientWidth / 2 - world.offsetLeft,
+        viewport.clientHeight / 2 - world.offsetTop,
+        factor
+      );
+    },
+    [zoomAt]
+  );
 
   const handlePointerDown = useCallback(
     (event: ReactPointerEvent<HTMLDivElement>) => {
@@ -129,6 +176,7 @@ export function ImageCanvas({
 
   return (
     <div
+      ref={viewportRef}
       onPointerDown={handlePointerDown}
       onPointerMove={handlePointerMove}
       onPointerUp={finishPan}
@@ -136,6 +184,7 @@ export function ImageCanvas({
       onLostPointerCapture={finishPan}
       onClickCapture={handleClickCapture}
       style={{
+        position: "relative",
         width: "100%",
         height: "100%",
         overflow: "hidden",
@@ -147,6 +196,7 @@ export function ImageCanvas({
       }}
     >
       <div
+        ref={worldRef}
         style={{
           position: "relative",
           isolation: "isolate",
@@ -167,8 +217,14 @@ export function ImageCanvas({
             ...imageStyle,
           }}
         />
-        {children}
+        <CanvasScaleProvider scale={scale}>{children}</CanvasScaleProvider>
       </div>
+      <CanvasControls
+        scale={scale}
+        onZoomIn={() => zoomAtCenter(ZOOM_STEP)}
+        onZoomOut={() => zoomAtCenter(1 / ZOOM_STEP)}
+        onReset={reset}
+      />
     </div>
   );
 }

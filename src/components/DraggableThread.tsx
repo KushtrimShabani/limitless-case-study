@@ -4,9 +4,11 @@ import { FloatingThread, CommentPin } from "@liveblocks/react-ui";
 import { ThreadData } from "@liveblocks/client";
 import { useDraggable } from "@dnd-kit/core";
 import { useMaxZIndex } from "../hooks/useMaxZIndex";
+import { useCanvasScale } from "./canvas/CanvasScaleContext";
 
 // A draggable thread
 export function DraggableThread({ thread }: { thread: ThreadData }) {
+  const scale = useCanvasScale();
   // Open threads that have just been created
   const defaultOpen = useMemo(() => {
     return Number(new Date()) - Number(new Date(thread.createdAt)) <= 100;
@@ -25,8 +27,8 @@ export function DraggableThread({ thread }: { thread: ThreadData }) {
   // anchor is only computed and saved on drop (see CommentsCanvas).
   const left = `${thread.metadata.x * 100}%`;
   const top = `${thread.metadata.y * 100}%`;
-  const dragX = transform?.x ?? 0;
-  const dragY = transform?.y ?? 0;
+  const dragX = (transform?.x ?? 0) / scale;
+  const dragY = (transform?.y ?? 0) / scale;
 
   // Used to set z-index higher than other threads when open or dragging
   const maxZIndex = useMaxZIndex();

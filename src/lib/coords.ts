@@ -1,6 +1,6 @@
 /**
  * Conversion between client (viewport) coordinates and normalized image
- * coordinates.
+ * coordinates, plus the canvas pan/zoom transform math.
  *
  * Image space: (0, 0) is the image's top-left corner and (1, 1) its
  * bottom-right corner, whatever size the image is rendered at. Thread anchors
@@ -11,7 +11,18 @@
  * from `img.getBoundingClientRect()`.
  */
 
+import {
+  DOM_DELTA_LINE,
+  DOM_DELTA_PAGE,
+  MAX_SCALE,
+  MIN_SCALE,
+  WHEEL_LINE_HEIGHT,
+  WHEEL_ZOOM_SPEED,
+} from "./constants";
+
 export type Point = { x: number; y: number };
+
+export type CanvasTransform = { x: number; y: number; scale: number };
 
 /** The parts of a DOMRect these functions need. Plain objects work too. */
 export type ImageRect = Pick<DOMRect, "left" | "top" | "width" | "height">;
@@ -52,9 +63,46 @@ export function isInsideImage(point: Point): boolean {
 
 /** Clamps a normalized point onto the image, i.e. into [0, 1] on both axes. */
 export function clampToImage(point: Point): Point {
-  return { x: clamp01(point.x), y: clamp01(point.y) };
+  return { x: clamp(point.x, 0, 1), y: clamp(point.y, 0, 1) };
 }
 
-function clamp01(value: number): number {
-  return Math.min(1, Math.max(0, value));
+/**
+ * Zooms by `factor` while keeping the point (cx, cy) fixed on screen.
+ * (cx, cy) is relative to the transform origin, not the viewport.
+ */
+export function zoomAtPoint(
+  transform: CanvasTransform,
+  cx: number,
+  cy: number,
+  factor: number
+): CanvasTransform {
+  if (!Number.isFinite(factor) || factor <= 0) {
+    return transform;
+  }
+  const next = clamp(transform.scale * factor, MIN_SCALE, MAX_SCALE);
+  const ratio = next / transform.scale;
+  return {
+    x: cx - (cx - transform.x) * ratio,
+    y: cy - (cy - transform.y) * ratio,
+    scale: next,
+  };
+}
+
+export function wheelZoomFactor(
+  deltaY: number,
+  deltaMode: number,
+  pageHeight: number
+): number {
+  const unit =
+    deltaMode === DOM_DELTA_LINE
+      ? WHEEL_LINE_HEIGHT
+      : deltaMode === DOM_DELTA_PAGE
+        ? pageHeight
+        : 1;
+  const pixels = deltaY * unit;
+  return Math.exp(-pixels * WHEEL_ZOOM_SPEED);
+}
+
+function clamp(value: number, min: number, max: number): number {
+  return Math.min(max, Math.max(min, value));
 }
