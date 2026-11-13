@@ -22,9 +22,8 @@ export function DraggableThread({ thread }: { thread: ThreadData }) {
       data: { thread }, // Pass thread to DndContext drag end event
     });
 
-  // Anchor is normalized (0–1), so position it as a percentage of the image
-  // frame. While dragging, dnd-kit's pixel offset is layered on top; the new
-  // anchor is only computed and saved on drop (see CommentsCanvas).
+  // dnd-kit's offset is in screen pixels; divide by scale because the pin
+  // lives inside the scaled world. The anchor is only saved on drop.
   const left = `${thread.metadata.x * 100}%`;
   const top = `${thread.metadata.y * 100}%`;
   const dragX = (transform?.x ?? 0) / scale;
@@ -51,7 +50,8 @@ export function DraggableThread({ thread }: { thread: ThreadData }) {
           position: "absolute",
           left,
           top,
-          transform: `translate3d(${dragX}px, ${dragY}px, 0)`,
+          transform: `translate3d(${dragX}px, ${dragY}px, 0) scale(${1 / scale})`,
+          transformOrigin: "0 0",
           zIndex: currentZIndex,
         }}
       >
