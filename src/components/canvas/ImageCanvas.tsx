@@ -91,9 +91,13 @@ export function ImageCanvas({
     [zoomAt]
   );
 
+  // Capture phase: runs even when a pin stops the pointerdown from bubbling.
+  const resetDidDrag = useCallback(() => {
+    didDrag.current = false;
+  }, []);
+
   const handlePointerDown = useCallback(
     (event: ReactPointerEvent<HTMLDivElement>) => {
-      didDrag.current = false;
       const target = event.target;
       if (
         event.button !== 0 ||
@@ -177,6 +181,7 @@ export function ImageCanvas({
   return (
     <div
       ref={viewportRef}
+      onPointerDownCapture={resetDidDrag}
       onPointerDown={handlePointerDown}
       onPointerMove={handlePointerMove}
       onPointerUp={finishPan}

@@ -49,14 +49,6 @@ export function clientToImage(
   };
 }
 
-/** Inverse of `clientToImage`: normalized image point to client point. */
-export function imageToClient(point: Point, imgRect: ImageRect): Point {
-  return {
-    x: imgRect.left + point.x * imgRect.width,
-    y: imgRect.top + point.y * imgRect.height,
-  };
-}
-
 /** True when a normalized point lies on the image (edges included). */
 export function isInsideImage(point: Point): boolean {
   return point.x >= 0 && point.x <= 1 && point.y >= 0 && point.y <= 1;

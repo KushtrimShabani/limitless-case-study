@@ -3,6 +3,7 @@ import { useSelf } from "@liveblocks/react";
 import { useMaxZIndex } from "../hooks/useMaxZIndex";
 import type { Point } from "../lib/coords";
 import { useCanvasScale } from "./canvas/CanvasScaleContext";
+import { anchoredPinStyle, stopPointerDown } from "./canvas/anchoredPin";
 
 type NewThreadComposerProps = {
   /** Anchor in normalized image coordinates (0–1). */
@@ -35,16 +36,10 @@ export function NewThreadComposer({ point, onClose }: NewThreadComposerProps) {
       onComposerSubmit={onClose}
     >
       <CommentPin
-        data-canvas-pan-ignore
         userId={creatorId ?? undefined}
         corner="top-left"
-        style={{
-          position: "absolute",
-          left: `${point.x * 100}%`,
-          top: `${point.y * 100}%`,
-          transform: `scale(${1 / scale})`,
-          transformOrigin: "0 0",
-        }}
+        onPointerDown={stopPointerDown}
+        style={anchoredPinStyle(point, scale)}
       />
     </FloatingComposer>
   );
