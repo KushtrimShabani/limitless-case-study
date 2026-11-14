@@ -16,6 +16,8 @@ import {
   DOM_DELTA_PAGE,
   MAX_SCALE,
   MIN_SCALE,
+  THREAD_FLIP_MARGIN,
+  THREAD_WIDTH,
   WHEEL_LINE_HEIGHT,
   WHEEL_MAX_STEP,
   WHEEL_ZOOM_SPEED,
@@ -24,6 +26,8 @@ import {
 export type Point = { x: number; y: number };
 
 export type CanvasTransform = { x: number; y: number; scale: number };
+
+export type ThreadSide = "left" | "right";
 
 /** The parts of a DOMRect these functions need. Plain objects work too. */
 export type ImageRect = Pick<DOMRect, "left" | "top" | "width" | "height">;
@@ -93,6 +97,15 @@ export function wheelZoomFactor(
     1 / WHEEL_MAX_STEP,
     WHEEL_MAX_STEP
   );
+}
+
+export function threadSide(
+  pinRight: number,
+  viewportRight: number
+): ThreadSide {
+  return viewportRight - pinRight < THREAD_WIDTH + THREAD_FLIP_MARGIN
+    ? "left"
+    : "right";
 }
 
 function clamp(value: number, min: number, max: number): number {

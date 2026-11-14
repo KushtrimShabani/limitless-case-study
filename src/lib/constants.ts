@@ -6,3 +6,6 @@ export const WHEEL_LINE_HEIGHT = 16;
 export const WHEEL_MAX_STEP = 2;
 export const DOM_DELTA_LINE = 1;
 export const DOM_DELTA_PAGE = 2;
+export const THREAD_WIDTH = 350;
+// Liveblocks' popover side offset (6) + collision padding (10).
+export const THREAD_FLIP_MARGIN = 16;

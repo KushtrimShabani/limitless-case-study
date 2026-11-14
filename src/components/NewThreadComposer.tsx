@@ -1,9 +1,11 @@
+import { useRef } from "react";
 import { CommentPin, FloatingComposer } from "@liveblocks/react-ui";
 import { useSelf } from "@liveblocks/react";
 import { useCreateThread } from "@liveblocks/react/suspense";
+import { useFlipSide } from "../hooks/useFlipSide";
 import { useMaxZIndex } from "../hooks/useMaxZIndex";
 import type { Point } from "../lib/coords";
-import { useCanvasScale } from "./canvas/CanvasScaleContext";
+import { useCanvas } from "./canvas/CanvasContext";
 import { anchoredPinStyle, stopPointerDown } from "./canvas/anchoredPin";
 
 type NewThreadComposerProps = {
@@ -19,11 +21,14 @@ export function NewThreadComposer({ point, onClose }: NewThreadComposerProps) {
   const creatorId = useSelf((me) => me.id);
   const createThread = useCreateThread();
   const maxZIndex = useMaxZIndex();
-  const scale = useCanvasScale();
+  const { transform, viewportRef } = useCanvas();
+  const pinRef = useRef<HTMLButtonElement>(null);
+  const side = useFlipSide(pinRef, viewportRef, transform);
 
   return (
     <FloatingComposer
       defaultOpen={true}
+      side={side}
       onOpenChange={(open) => {
         if (!open) {
           onClose();
@@ -41,10 +46,11 @@ export function NewThreadComposer({ point, onClose }: NewThreadComposerProps) {
       }}
     >
       <CommentPin
+        ref={pinRef}
         userId={creatorId ?? undefined}
         corner="top-left"
         onPointerDown={stopPointerDown}
-        style={anchoredPinStyle(point, scale)}
+        style={anchoredPinStyle(point, transform.scale)}
       />
     </FloatingComposer>
   );

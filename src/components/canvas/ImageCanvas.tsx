@@ -13,7 +13,7 @@ import { useCanvasTransform } from "../../hooks/useCanvasTransform";
 import { ZOOM_STEP } from "../../lib/constants";
 import { wheelZoomFactor } from "../../lib/coords";
 import { CanvasControls } from "./CanvasControls";
-import { CanvasScaleProvider } from "./CanvasScaleContext";
+import { CanvasProvider } from "./CanvasContext";
 
 const DRAG_THRESHOLD = 5;
 
@@ -237,7 +237,9 @@ export function ImageCanvas({
             ...imageStyle,
           }}
         />
-        <CanvasScaleProvider scale={scale}>{children}</CanvasScaleProvider>
+        <CanvasProvider transform={{ x, y, scale }} viewportRef={viewportRef}>
+          {children}
+        </CanvasProvider>
       </div>
       <CanvasControls
         scale={scale}
