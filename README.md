@@ -2,6 +2,8 @@
 
 Figma-style commenting on an image, built on the Liveblocks [`nextjs-comments-canvas`](https://github.com/liveblocks/liveblocks/tree/main/examples/nextjs-comments-canvas) example. Click the image to comment, drag to pan, zoom with the wheel or the controls. Comments sync in real time.
 
+Part A (product thinking) is in [RESPONSE.md](RESPONSE.md).
+
 ## Setup
 
 Requires Node.js 20.19+, 22.12+ or 24+ (the minimum for Vite, which Vitest runs on).
@@ -74,7 +76,7 @@ Requires Node.js 20.19+, 22.12+ or 24+ (the minimum for Vite, which Vitest runs 
 
 **Tools**
 
-- **Claude (chat), for planning and review.** I used it to break the brief into steps, discuss the coordinate model and the pan/zoom approach, draft the prompt for each step, review the code, and tighten wording in this README.
+- **Claude (chat), for planning and review.** I used it to break the brief into steps, discuss the coordinate model and the pan/zoom approach, draft the prompt for each step, review the code, and tighten wording in this README. It also wrote the first draft of Part A in `RESPONSE.md`.
 - **Claude Code, for implementation and review.** It wrote most of the code one step at a time, following the rules in `CLAUDE.md`, and reviewed staged diffs before I committed.
 - **Codex, for targeted implementation help and a second review.** I used it to review staged diffs, implement focused fixes found during review, extend the coordinate and zoom tests, and re-check the tests and build before committing.
 
