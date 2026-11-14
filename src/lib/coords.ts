@@ -49,11 +49,6 @@ export function clientToImage(
   };
 }
 
-/** True when a normalized point lies on the image (edges included). */
-export function isInsideImage(point: Point): boolean {
-  return point.x >= 0 && point.x <= 1 && point.y >= 0 && point.y <= 1;
-}
-
 /** Clamps a normalized point onto the image, i.e. into [0, 1] on both axes. */
 export function clampToImage(point: Point): Point {
   return { x: clamp(point.x, 0, 1), y: clamp(point.y, 0, 1) };

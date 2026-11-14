@@ -1,5 +1,6 @@
 import { CommentPin, FloatingComposer } from "@liveblocks/react-ui";
 import { useSelf } from "@liveblocks/react";
+import { useCreateThread } from "@liveblocks/react/suspense";
 import { useMaxZIndex } from "../hooks/useMaxZIndex";
 import type { Point } from "../lib/coords";
 import { useCanvasScale } from "./canvas/CanvasScaleContext";
@@ -16,7 +17,7 @@ type NewThreadComposerProps = {
 // inside the image frame so the percentage position maps onto the image.
 export function NewThreadComposer({ point, onClose }: NewThreadComposerProps) {
   const creatorId = useSelf((me) => me.id);
-  // Create thread above other threads
+  const createThread = useCreateThread();
   const maxZIndex = useMaxZIndex();
   const scale = useCanvasScale();
 
@@ -28,12 +29,16 @@ export function NewThreadComposer({ point, onClose }: NewThreadComposerProps) {
           onClose();
         }
       }}
-      metadata={{
-        x: point.x,
-        y: point.y,
-        zIndex: maxZIndex + 1,
+      onComposerSubmit={({ body, attachments }, event) => {
+        // Skip the composer's built-in createThread; we create it ourselves.
+        event.preventDefault();
+        createThread({
+          body,
+          attachments,
+          metadata: { x: point.x, y: point.y, zIndex: maxZIndex + 1 },
+        });
+        onClose();
       }}
-      onComposerSubmit={onClose}
     >
       <CommentPin
         userId={creatorId ?? undefined}

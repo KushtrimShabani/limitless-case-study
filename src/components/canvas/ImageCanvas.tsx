@@ -24,6 +24,7 @@ type ImageCanvasProps = {
   height: number;
   alt: string;
   imageStyle?: CSSProperties;
+  onImageClick: (clientX: number, clientY: number) => void;
   children: ReactNode;
 };
 
@@ -33,6 +34,7 @@ type PanPointer = {
   startY: number;
   lastX: number;
   lastY: number;
+  onImage: boolean;
 };
 
 export function ImageCanvas({
@@ -42,6 +44,7 @@ export function ImageCanvas({
   height,
   alt,
   imageStyle,
+  onImageClick,
   children,
 }: ImageCanvasProps) {
   const { x, y, scale, panBy, zoomAt, reset } = useCanvasTransform();
@@ -114,10 +117,11 @@ export function ImageCanvas({
         startY: event.clientY,
         lastX: event.clientX,
         lastY: event.clientY,
+        onImage: target === imageRef.current,
       };
       event.currentTarget.setPointerCapture(event.pointerId);
     },
-    []
+    [imageRef]
   );
 
   const handlePointerMove = useCallback(
@@ -149,21 +153,32 @@ export function ImageCanvas({
     [panBy]
   );
 
-  const finishPan = useCallback((event: ReactPointerEvent<HTMLDivElement>) => {
-    const pointer = panPointer.current;
-    if (!pointer || pointer.id !== event.pointerId) {
-      return;
-    }
+  // Capture retargets the click to the viewport, so an image click is
+  // detected here: a pointerup without drag on a press that began on the image.
+  const finishPan = useCallback(
+    (event: ReactPointerEvent<HTMLDivElement>) => {
+      const pointer = panPointer.current;
+      if (!pointer || pointer.id !== event.pointerId) {
+        return;
+      }
 
-    panPointer.current = null;
-    setIsPanning(false);
-    if (event.type === "pointercancel" || event.type === "lostpointercapture") {
-      didDrag.current = false;
-    }
-    if (event.currentTarget.hasPointerCapture(event.pointerId)) {
-      event.currentTarget.releasePointerCapture(event.pointerId);
-    }
-  }, []);
+      panPointer.current = null;
+      setIsPanning(false);
+      if (
+        event.type === "pointercancel" ||
+        event.type === "lostpointercapture"
+      ) {
+        didDrag.current = false;
+      }
+      if (event.currentTarget.hasPointerCapture(event.pointerId)) {
+        event.currentTarget.releasePointerCapture(event.pointerId);
+      }
+      if (event.type === "pointerup" && !didDrag.current && pointer.onImage) {
+        onImageClick(event.clientX, event.clientY);
+      }
+    },
+    [onImageClick]
+  );
 
   const handleClickCapture = useCallback(
     (event: ReactMouseEvent<HTMLDivElement>) => {

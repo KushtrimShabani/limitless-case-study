@@ -1,10 +1,9 @@
 import { useThreads } from "@liveblocks/react/suspense";
 import { useCallback, useRef, useState } from "react";
-import { PlaceThreadButton } from "./PlaceThreadButton";
 import { ThreadPin } from "./ThreadPin";
 import { NewThreadComposer } from "./NewThreadComposer";
 import { ImageCanvas } from "./canvas/ImageCanvas";
-import { clientToImage, isInsideImage, type Point } from "../lib/coords";
+import { clampToImage, clientToImage, type Point } from "../lib/coords";
 
 const IMAGE = {
   src: "/sample-design.svg",
@@ -18,38 +17,37 @@ const IMAGE = {
 // its final size before the image loads and pins never jump.
 const IMAGE_CSS_WIDTH = `min(90vw, ${(85 * IMAGE.width) / IMAGE.height}vh)`;
 
-type PlacementMode =
-  | { kind: "idle" }
-  | { kind: "placing" }
-  | { kind: "composing"; point: Point };
-
 export function CommentsCanvas() {
   const { threads } = useThreads();
   const imageRef = useRef<HTMLImageElement>(null);
-  const [mode, setMode] = useState<PlacementMode>({ kind: "idle" });
+  const [draft, setDraft] = useState<Point | null>(null);
+  // The composer closes on pointerdown outside it, before the click arrives,
+  // so remember whether a draft was open: that click only cancels it.
+  const draftOpenOnPointerDown = useRef(false);
 
-  // Placing click: start composing if it landed on the image, else cancel.
-  const handlePlace = useCallback((clientX: number, clientY: number) => {
+  const handleImageClick = useCallback((clientX: number, clientY: number) => {
     const image = imageRef.current;
-    const point = image
-      ? clientToImage(clientX, clientY, image.getBoundingClientRect())
-      : null;
-    if (point && isInsideImage(point)) {
-      setMode({ kind: "composing", point });
-    } else {
-      setMode({ kind: "idle" });
+    if (draftOpenOnPointerDown.current || !image) {
+      return;
+    }
+    const point = clientToImage(
+      clientX,
+      clientY,
+      image.getBoundingClientRect()
+    );
+    if (point) {
+      setDraft(clampToImage(point));
     }
   }, []);
 
-  const resetMode = useCallback(() => setMode({ kind: "idle" }), []);
+  const clearDraft = useCallback(() => setDraft(null), []);
 
   return (
     <div
-      style={{
-        position: "relative",
-        width: "100vw",
-        height: "100vh",
+      onPointerDownCapture={() => {
+        draftOpenOnPointerDown.current = draft !== null;
       }}
+      style={{ width: "100vw", height: "100vh" }}
     >
       <ImageCanvas
         imageRef={imageRef}
@@ -58,20 +56,15 @@ export function CommentsCanvas() {
         height={IMAGE.height}
         alt={IMAGE.alt}
         imageStyle={{ width: IMAGE_CSS_WIDTH, height: "auto" }}
+        onImageClick={handleImageClick}
       >
         {threads.map((thread) => (
           <ThreadPin key={thread.id} thread={thread} />
         ))}
-        {mode.kind === "composing" ? (
-          <NewThreadComposer point={mode.point} onClose={resetMode} />
+        {draft ? (
+          <NewThreadComposer point={draft} onClose={clearDraft} />
         ) : null}
       </ImageCanvas>
-      <PlaceThreadButton
-        isPlacing={mode.kind === "placing"}
-        onStart={() => setMode({ kind: "placing" })}
-        onPlace={handlePlace}
-        onCancel={resetMode}
-      />
     </div>
   );
 }
