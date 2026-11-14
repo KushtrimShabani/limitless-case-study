@@ -2,11 +2,13 @@
 
 import { LiveblocksProvider } from "@liveblocks/react";
 import { PropsWithChildren, Suspense } from "react";
+import { liveblocksFetch } from "../lib/liveblocksFetch";
 
 export function Providers({ children }: PropsWithChildren) {
   return (
     <LiveblocksProvider
       authEndpoint="/api/liveblocks-auth"
+      polyfills={{ fetch: liveblocksFetch }}
       // Get users' info from their ID
       resolveUsers={async ({ userIds }) => {
         const searchParams = new URLSearchParams(
