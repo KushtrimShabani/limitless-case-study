@@ -10,10 +10,12 @@ import {
   useState,
 } from "react";
 import { useCanvasTransform } from "../../hooks/useCanvasTransform";
+import { useImageLoad } from "../../hooks/useImageLoad";
 import { ZOOM_STEP } from "../../lib/constants";
 import { wheelZoomFactor } from "../../lib/coords";
 import { CanvasControls } from "./CanvasControls";
 import { CanvasProvider } from "./CanvasContext";
+import { ImageLoadError, ImageSkeleton } from "./ImageStatus";
 
 const DRAG_THRESHOLD = 5;
 
@@ -48,6 +50,7 @@ export function ImageCanvas({
   children,
 }: ImageCanvasProps) {
   const { x, y, scale, panBy, zoomAt, reset } = useCanvasTransform();
+  const image = useImageLoad(src);
   const viewportRef = useRef<HTMLDivElement>(null);
   const worldRef = useRef<HTMLDivElement>(null);
   const panPointer = useRef<PanPointer | null>(null);
@@ -225,21 +228,31 @@ export function ImageCanvas({
         }}
       >
         <img
+          key={image.attempt}
           ref={imageRef}
-          src={src}
+          src={image.src}
           width={width}
           height={height}
           alt={alt}
           draggable={false}
+          onLoad={image.onLoad}
+          onError={image.onError}
           style={{
             display: "block",
             userSelect: "none",
+            visibility: image.status === "loaded" ? "visible" : "hidden",
             ...imageStyle,
           }}
         />
-        <CanvasProvider transform={{ x, y, scale }} viewportRef={viewportRef}>
-          {children}
-        </CanvasProvider>
+        {image.status === "loading" ? <ImageSkeleton /> : null}
+        {image.status === "error" ? (
+          <ImageLoadError onRetry={image.retry} />
+        ) : null}
+        {image.status === "loaded" ? (
+          <CanvasProvider transform={{ x, y, scale }} viewportRef={viewportRef}>
+            {children}
+          </CanvasProvider>
+        ) : null}
       </div>
       <CanvasControls
         scale={scale}

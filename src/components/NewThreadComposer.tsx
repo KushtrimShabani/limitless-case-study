@@ -4,6 +4,7 @@ import { useSelf } from "@liveblocks/react";
 import { useCreateThread } from "@liveblocks/react/suspense";
 import { useFlipSide } from "../hooks/useFlipSide";
 import { useMaxZIndex } from "../hooks/useMaxZIndex";
+import { hasCommentContent } from "../lib/commentBody";
 import type { Point } from "../lib/coords";
 import { useCanvas } from "./canvas/CanvasContext";
 import { anchoredPinStyle, stopPointerDown } from "./canvas/anchoredPin";
@@ -37,6 +38,9 @@ export function NewThreadComposer({ point, onClose }: NewThreadComposerProps) {
       onComposerSubmit={({ body, attachments }, event) => {
         // Skip the composer's built-in createThread; we create it ourselves.
         event.preventDefault();
+        if (!hasCommentContent(body)) {
+          return;
+        }
         createThread({
           body,
           attachments,

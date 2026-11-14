@@ -53,6 +53,23 @@ main {
   opacity: 0.2;
 }
 
+.image-skeleton {
+  background: #e4e1da;
+  animation: image-skeleton-pulse 1.4s ease-in-out infinite;
+}
+
+@keyframes image-skeleton-pulse {
+  50% {
+    opacity: 0.55;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .image-skeleton {
+    animation: none;
+  }
+}
+
 .thread,
 .composer {
   position: relative;

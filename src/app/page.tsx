@@ -7,6 +7,7 @@ import { Loading } from "../components/Loading";
 import { ClientSideSuspense } from "@liveblocks/react";
 import { ErrorBoundary } from "react-error-boundary";
 import { CommentsCanvas } from "../components/CommentsCanvas";
+import { ErrorFallback } from "../components/ErrorFallback";
 
 export default function Page() {
   // New room: the starter's room holds threads with pixel coordinates, which
@@ -17,9 +18,8 @@ export default function Page() {
   return (
     <RoomProvider id={roomId}>
       <ErrorBoundary
-        fallback={
-          <div className="error">There was an error while getting threads.</div>
-        }
+        FallbackComponent={ErrorFallback}
+        onReset={() => window.location.reload()}
       >
         <ClientSideSuspense fallback={<Loading />}>
           <CommentsCanvas />
