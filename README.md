@@ -52,7 +52,7 @@ Requires Node.js 20.19+, 22.12+ or 24+ (the minimum for Vite, which Vitest runs 
 - **Threads open inwards near the right edge.** `useFlipSide` measures the space from the pin to the right edge of the image or of the viewport, whichever is closer. If that space is less than 366px (350px popover + 16px offset and padding), the thread opens to the left. A comment near the image's right edge opens inwards over the image, as the brief asks, and a thread never runs off-screen when the image is wider than the window. It updates on pan, zoom and resize.
 - **Drafts are local until submitted.** A new comment is a local `{ x, y }` draft (one at a time). `createThread` runs only on submit, after the body is validated.
 - **Pure logic lives in `src/lib`** with no React imports, which keeps it unit-testable. Hooks are in `src/hooks`, and components stay small.
-- **Errors are visible and recoverable.**
+- **Errors are visible and handled.**
   - A skeleton shows while the image loads. If it fails, an error appears with Retry. Comments only render once the image has loaded.
   - A banner reports connection loss and recovery, using `useStatus` and `useLostConnectionListener`.
   - An error boundary around the Suspense boundary offers Retry, which reloads the page.
@@ -62,6 +62,7 @@ Requires Node.js 20.19+, 22.12+ or 24+ (the minimum for Vite, which Vitest runs 
 ## Out of scope
 
 - **Moving existing comments.** The starter's drag-to-move (dnd-kit) was removed so that dragging always pans.
+- **Retrying a failed save.** A failed comment shows a notice, but the text isn't kept. It has to be placed and typed again.
 - **Real authentication.** The starter's demo auth assigns a random user from a fixed list on each page load, so after a reload you are usually a different user. Editing and deleting through Liveblocks' built-in comment menu only works on your own comments, so comments from an earlier session usually can't be edited after a reload.
 - **Multiple images or image upload.** The canvas shows one sample image.
 - **Touch pinch-zoom and keyboard shortcuts.** Touch can pan, but zoom uses the wheel, trackpad or controls. Placing a comment requires a pointer.
@@ -73,9 +74,9 @@ Requires Node.js 20.19+, 22.12+ or 24+ (the minimum for Vite, which Vitest runs 
 
 **Tools**
 
-- **Claude (chat), for planning.** I used it to break the brief into steps, discuss the coordinate model and the pan/zoom approach, and draft the prompt for each step.
+- **Claude (chat), for planning and review.** I used it to break the brief into steps, discuss the coordinate model and the pan/zoom approach, draft the prompt for each step, review the code, and tighten wording in this README.
 - **Claude Code, for implementation and review.** It wrote most of the code one step at a time, following the rules in `CLAUDE.md`, and reviewed staged diffs before I committed.
-- **Codex, for a second review.** I used it to review staged diffs and re-check the tests and build before committing.
+- **Codex, for targeted implementation help and a second review.** I used it to review staged diffs, implement focused fixes found during review, extend the coordinate and zoom tests, and re-check the tests and build before committing.
 
 **How I worked**
 
