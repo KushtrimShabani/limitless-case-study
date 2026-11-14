@@ -7,9 +7,9 @@ import { useCanvas } from "./canvas/CanvasContext";
 import { anchoredPinStyle, stopPointerDown } from "./canvas/anchoredPin";
 
 export function ThreadPin({ thread }: { thread: ThreadData }) {
-  const { transform, viewportRef } = useCanvas();
+  const { transform, imageRef, viewportRef } = useCanvas();
   const pinRef = useRef<HTMLButtonElement>(null);
-  const side = useFlipSide(pinRef, viewportRef, transform);
+  const side = useFlipSide(pinRef, imageRef, viewportRef, transform);
   const maxZIndex = useMaxZIndex();
   // Open threads that have just been created
   const defaultOpen = useMemo(() => {

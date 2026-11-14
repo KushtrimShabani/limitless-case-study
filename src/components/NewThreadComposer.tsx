@@ -22,9 +22,9 @@ export function NewThreadComposer({ point, onClose }: NewThreadComposerProps) {
   const creatorId = useSelf((me) => me.id);
   const createThread = useCreateThread();
   const maxZIndex = useMaxZIndex();
-  const { transform, viewportRef } = useCanvas();
+  const { transform, imageRef, viewportRef } = useCanvas();
   const pinRef = useRef<HTMLButtonElement>(null);
-  const side = useFlipSide(pinRef, viewportRef, transform);
+  const side = useFlipSide(pinRef, imageRef, viewportRef, transform);
 
   return (
     <FloatingComposer

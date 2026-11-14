@@ -13,6 +13,7 @@ import {
 
 export function useFlipSide(
   pinRef: RefObject<HTMLElement>,
+  imageRef: RefObject<HTMLElement>,
   viewportRef: RefObject<HTMLElement>,
   transform: CanvasTransform
 ): ThreadSide {
@@ -20,17 +21,19 @@ export function useFlipSide(
 
   const update = useCallback(() => {
     const pin = pinRef.current;
+    const image = imageRef.current;
     const viewport = viewportRef.current;
-    if (!pin || !viewport) {
+    if (!pin || !image || !viewport) {
       return;
     }
     setSide(
       threadSide(
         pin.getBoundingClientRect().right,
+        image.getBoundingClientRect().right,
         viewport.getBoundingClientRect().right
       )
     );
-  }, [pinRef, viewportRef]);
+  }, [pinRef, imageRef, viewportRef]);
 
   const { x, y, scale } = transform;
   useLayoutEffect(update, [update, x, y, scale]);

@@ -101,11 +101,11 @@ export function wheelZoomFactor(
 
 export function threadSide(
   pinRight: number,
+  imageRight: number,
   viewportRight: number
 ): ThreadSide {
-  return viewportRight - pinRight < THREAD_WIDTH + THREAD_FLIP_MARGIN
-    ? "left"
-    : "right";
+  const edge = Math.min(imageRight, viewportRight);
+  return edge - pinRight < THREAD_WIDTH + THREAD_FLIP_MARGIN ? "left" : "right";
 }
 
 function clamp(value: number, min: number, max: number): number {

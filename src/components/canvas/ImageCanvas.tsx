@@ -249,7 +249,11 @@ export function ImageCanvas({
           <ImageLoadError onRetry={image.retry} />
         ) : null}
         {image.status === "loaded" ? (
-          <CanvasProvider transform={{ x, y, scale }} viewportRef={viewportRef}>
+          <CanvasProvider
+            transform={{ x, y, scale }}
+            imageRef={imageRef}
+            viewportRef={viewportRef}
+          >
             {children}
           </CanvasProvider>
         ) : null}
