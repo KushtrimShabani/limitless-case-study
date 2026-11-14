@@ -23,7 +23,8 @@ This is a hiring case study: an image commenting app (Figma-style) built on top 
 
 - One step at a time: implement only what is asked, then stop and summarize what changed and why.
 - Work directly on `main`, no branches.
-- After each step: stage only that step's files, show the file list and a diff summary, propose a conventional commit message, and wait for an explicit "ok" before committing. Then push.
+- Never run `git add`, `git commit` or `git push`. The user stages, commits and pushes everything.
+- After each step: stop, list the files you changed, give a short summary of the diff, and propose a conventional commit message. Then wait.
 - One logical change per commit. Never amend, squash, rebase or force push. Bugs get a new `fix:` commit.
 
 ## Secrets
