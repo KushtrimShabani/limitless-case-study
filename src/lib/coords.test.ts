@@ -1,12 +1,25 @@
 import { describe, expect, it } from "vitest";
 import {
+  DOM_DELTA_LINE,
+  THREAD_FLIP_MARGIN,
+  THREAD_WIDTH,
+  WHEEL_LINE_HEIGHT,
+  WHEEL_MAX_STEP,
+} from "./constants";
+import {
   clampToImage,
   clientToImage,
+  threadSide,
+  wheelZoomFactor,
   zoomAtPoint,
   type CanvasTransform,
   type ImageRect,
   type Point,
 } from "./coords";
+
+const DOM_DELTA_PIXEL = 0;
+const PAGE_HEIGHT = 800;
+const SPACE_NEEDED = THREAD_WIDTH + THREAD_FLIP_MARGIN;
 
 const RECT_AT_SCALE_1: ImageRect = {
   left: 100,
@@ -82,6 +95,57 @@ describe("zoomAtPoint", () => {
     expectSamePoint(
       pointAtCursor(next, cursor),
       pointAtCursor(transform, cursor)
+    );
+  });
+});
+
+describe("threadSide", () => {
+  it("opens left near the image's right edge, even with room in the viewport", () => {
+    const imageRight = 1000;
+    const viewportRight = 1400;
+    const pinRight = imageRight - SPACE_NEEDED + 1;
+
+    expect(threadSide(pinRight, imageRight, viewportRight)).toBe("left");
+  });
+
+  it("opens left near the viewport's right edge when the image extends past it", () => {
+    const imageRight = 1600;
+    const viewportRight = 1000;
+    const pinRight = viewportRight - SPACE_NEEDED + 1;
+
+    expect(threadSide(pinRight, imageRight, viewportRight)).toBe("left");
+  });
+
+  it("opens right when both edges leave enough room", () => {
+    const imageRight = 1000;
+    const viewportRight = 1400;
+    const pinRight = imageRight - SPACE_NEEDED;
+
+    expect(threadSide(pinRight, imageRight, viewportRight)).toBe("right");
+  });
+});
+
+describe("wheelZoomFactor", () => {
+  it("treats a line delta as WHEEL_LINE_HEIGHT pixels", () => {
+    expect(wheelZoomFactor(3, DOM_DELTA_LINE, PAGE_HEIGHT)).toBeCloseTo(
+      wheelZoomFactor(3 * WHEEL_LINE_HEIGHT, DOM_DELTA_PIXEL, PAGE_HEIGHT)
+    );
+  });
+
+  it("zooms in on scroll up and out on scroll down by the same factor", () => {
+    const zoomIn = wheelZoomFactor(-100, DOM_DELTA_PIXEL, PAGE_HEIGHT);
+    const zoomOut = wheelZoomFactor(100, DOM_DELTA_PIXEL, PAGE_HEIGHT);
+
+    expect(zoomIn).toBeGreaterThan(1);
+    expect(zoomIn * zoomOut).toBeCloseTo(1);
+  });
+
+  it("caps a single event at WHEEL_MAX_STEP in both directions", () => {
+    expect(wheelZoomFactor(-10_000, DOM_DELTA_PIXEL, PAGE_HEIGHT)).toBe(
+      WHEEL_MAX_STEP
+    );
+    expect(wheelZoomFactor(10_000, DOM_DELTA_PIXEL, PAGE_HEIGHT)).toBe(
+      1 / WHEEL_MAX_STEP
     );
   });
 });
