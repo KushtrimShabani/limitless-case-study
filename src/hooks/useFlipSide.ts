@@ -15,11 +15,15 @@ export function useFlipSide(
   pinRef: RefObject<HTMLElement>,
   imageRef: RefObject<HTMLElement>,
   viewportRef: RefObject<HTMLElement>,
-  transform: CanvasTransform
+  transform: CanvasTransform,
+  enabled: boolean
 ): ThreadSide {
   const [side, setSide] = useState<ThreadSide>("right");
 
   const update = useCallback(() => {
+    if (!enabled) {
+      return;
+    }
     const pin = pinRef.current;
     const image = imageRef.current;
     const viewport = viewportRef.current;
@@ -33,20 +37,20 @@ export function useFlipSide(
         viewport.getBoundingClientRect().right
       )
     );
-  }, [pinRef, imageRef, viewportRef]);
+  }, [enabled, pinRef, imageRef, viewportRef]);
 
   const { x, y, scale } = transform;
   useLayoutEffect(update, [update, x, y, scale]);
 
   useEffect(() => {
     const viewport = viewportRef.current;
-    if (!viewport) {
+    if (!enabled || !viewport) {
       return;
     }
     const observer = new ResizeObserver(update);
     observer.observe(viewport);
     return () => observer.disconnect();
-  }, [update, viewportRef]);
+  }, [enabled, update, viewportRef]);
 
   return side;
 }

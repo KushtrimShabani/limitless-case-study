@@ -24,7 +24,8 @@ export function NewThreadComposer({ point, onClose }: NewThreadComposerProps) {
   const maxZIndex = useMaxZIndex();
   const { transform, imageRef, viewportRef } = useCanvas();
   const pinRef = useRef<HTMLButtonElement>(null);
-  const side = useFlipSide(pinRef, imageRef, viewportRef, transform);
+  // Mounted only while the draft is open, so always measure.
+  const side = useFlipSide(pinRef, imageRef, viewportRef, transform, true);
 
   return (
     <FloatingComposer

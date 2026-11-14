@@ -1,4 +1,4 @@
-import { useMemo, useRef, useState } from "react";
+import { useRef, useState } from "react";
 import { FloatingThread, CommentPin } from "@liveblocks/react-ui";
 import type { ThreadData } from "@liveblocks/client";
 import { useFlipSide } from "../hooks/useFlipSide";
@@ -9,13 +9,12 @@ import { anchoredPinStyle, stopPointerDown } from "./canvas/anchoredPin";
 export function ThreadPin({ thread }: { thread: ThreadData }) {
   const { transform, imageRef, viewportRef } = useCanvas();
   const pinRef = useRef<HTMLButtonElement>(null);
-  const side = useFlipSide(pinRef, imageRef, viewportRef, transform);
   const maxZIndex = useMaxZIndex();
   // Open threads that have just been created
-  const defaultOpen = useMemo(() => {
-    return Number(new Date()) - Number(new Date(thread.createdAt)) <= 100;
-  }, [thread]);
-  const [isOpen, setIsOpen] = useState(defaultOpen);
+  const [isOpen, setIsOpen] = useState(
+    () => Date.now() - thread.createdAt.getTime() <= 100
+  );
+  const side = useFlipSide(pinRef, imageRef, viewportRef, transform, isOpen);
 
   const zIndex = isOpen ? maxZIndex + 1 : thread.metadata.zIndex || 0;
 
@@ -24,7 +23,6 @@ export function ThreadPin({ thread }: { thread: ThreadData }) {
       thread={thread}
       open={isOpen}
       onOpenChange={setIsOpen}
-      defaultOpen={defaultOpen}
       side={side}
     >
       <CommentPin
