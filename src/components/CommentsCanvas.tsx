@@ -1,6 +1,8 @@
 import { useThreads } from "@liveblocks/react/suspense";
 import { useCallback, useRef, useState } from "react";
 import { ConnectionBanner } from "./ConnectionBanner";
+import { SaveErrorNotice } from "./SaveErrorNotice";
+import { NoticeArea } from "./ui/Notice";
 import { ThreadPin } from "./ThreadPin";
 import { NewThreadComposer } from "./NewThreadComposer";
 import { ImageCanvas } from "./canvas/ImageCanvas";
@@ -66,7 +68,10 @@ export function CommentsCanvas() {
           <NewThreadComposer point={draft} onClose={clearDraft} />
         ) : null}
       </ImageCanvas>
-      <ConnectionBanner />
+      <NoticeArea>
+        <ConnectionBanner />
+        <SaveErrorNotice />
+      </NoticeArea>
     </div>
   );
 }

@@ -5,24 +5,22 @@ import {
   useStatus,
 } from "@liveblocks/react/suspense";
 import { type ConnectionNotice, connectionNotice } from "../lib/connection";
-import { buttonStyle } from "./ui/buttonStyle";
+import { Notice, type NoticeTone } from "./ui/Notice";
 
 const RESTORED_NOTICE_MS = 3000;
 
-const NOTICES: Record<
-  ConnectionNotice,
-  { message: string; background: string }
-> = {
-  reconnecting: {
-    message: "Connection lost. Reconnecting…",
-    background: "#fdf0d2",
-  },
-  restored: { message: "Reconnected.", background: "#dcefe7" },
-  failed: {
-    message: "Couldn't reconnect. New comments may not be saved.",
-    background: "#fbe1dd",
-  },
-};
+const NOTICES: Record<ConnectionNotice, { message: string; tone: NoticeTone }> =
+  {
+    reconnecting: {
+      message: "Connection lost. Reconnecting…",
+      tone: "warning",
+    },
+    restored: { message: "Reconnected.", tone: "success" },
+    failed: {
+      message: "Couldn't reconnect. New comments may not be saved.",
+      tone: "error",
+    },
+  };
 
 export function ConnectionBanner() {
   const status = useStatus();
@@ -41,42 +39,18 @@ export function ConnectionBanner() {
 
   // The live region stays mounted so screen readers announce changes.
   return (
-    <div
-      role="status"
-      aria-live="polite"
-      style={{
-        position: "fixed",
-        top: 12,
-        left: "50%",
-        transform: "translateX(-50%)",
-        zIndex: 10,
-      }}
-    >
+    <div role="status" aria-live="polite">
       {notice ? (
-        <div
-          style={{
-            display: "flex",
-            alignItems: "center",
-            gap: 12,
-            padding: "8px 14px",
-            background: NOTICES[notice].background,
-            border: "1px solid #00000020",
-            borderRadius: 8,
-            fontSize: 14,
-            color: "#1b1d1c",
-          }}
+        <Notice
+          tone={NOTICES[notice].tone}
+          action={
+            notice === "failed"
+              ? { label: "Reload", onClick: () => window.location.reload() }
+              : undefined
+          }
         >
           {NOTICES[notice].message}
-          {notice === "failed" ? (
-            <button
-              type="button"
-              onClick={() => window.location.reload()}
-              style={buttonStyle}
-            >
-              Reload
-            </button>
-          ) : null}
-        </div>
+        </Notice>
       ) : null}
     </div>
   );
